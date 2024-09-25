@@ -18,8 +18,9 @@ public class PersonQueue
 
     public Person Dequeue()
     {
-        var person = _queue[0];
-        _queue.RemoveAt(0);
+        var index = _queue.Count > 0 ? _queue.Count - 1 : 0;
+        var person = _queue[index];
+        _queue.RemoveAt(index);
         return person;
     }
 
