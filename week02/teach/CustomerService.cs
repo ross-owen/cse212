@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+/// <summary>
 /// Maintain a Customer Service Queue.  Allows new customers to be 
 /// added and allows customers to be serviced.
 /// </summary>
@@ -11,24 +13,50 @@ public class CustomerService {
         // Test Cases
 
         // Test 1
-        // Scenario: 
-        // Expected Result: 
+        // The user shall specify the maximum size of the Customer Service Queue when it is created. If the size is invalid (less than or equal to 0) then the size shall default to 10.
+        // Scenario: if less than zero, size is 10 
+        // Expected Result: if less than zero, size is 10
         Console.WriteLine("Test 1");
+        Assert.AreEqual(10, new CustomerService(-1)._maxSize);
+        Assert.AreEqual(10, new CustomerService(0)._maxSize);
+        var number = new Random().Next(1, int.MaxValue);
+        Assert.AreEqual(number, new CustomerService(number)._maxSize);
 
-        // Defect(s) Found: 
+        // Defect(s) Found: no defects
 
         Console.WriteLine("=================");
 
         // Test 2
-        // Scenario: 
-        // Expected Result: 
+        // Scenario: The AddNewCustomer method shall enqueue a new customer into the queue.  
+        // Expected Result: After adding a new customer, it should be in the queue 
         Console.WriteLine("Test 2");
 
-        // Defect(s) Found: 
+        var cs = new CustomerService(1);
+        cs.AddNewCustomer();
+        Assert.AreEqual(1, cs._queue.Count);
+        cs.AddNewCustomer();
+        Assert.AreEqual(2, cs._queue.Count);
+
+        // Defect(s) Found: enters two customers instead of one
 
         Console.WriteLine("=================");
 
-        // Add more Test Cases As Needed Below
+        // Test 3
+        // Scenario: If the queue is full when trying to add a customer, then an error message will be displayed.
+        // Expected: Error when queue is full
+        Console.WriteLine("Test 3");
+        cs = new CustomerService(1);
+        cs._queue.Add(new Customer("name", "account id", "problem"));
+        Assert.ThrowsException<InvalidOperationException>(() => cs.AddNewCustomer());
+
+        // Defect(s) Found: Does not throw an error when full
+        
+        // Test 4
+        // Scenario: The ServeCustomer function shall dequeue the next customer from the queue and display the details.
+        // Expected: 
+        Console.WriteLine("Test 4");
+        
+        // Defect(s) Found:
     }
 
     private readonly List<Customer> _queue = new();

@@ -1,4 +1,6 @@
-﻿public class DuplicateCounter
+﻿namespace learn;
+
+public class DuplicateCounter
 {
     //Count how many duplicates are in a collection of data.
 
@@ -24,7 +26,7 @@
 
     private static int CountDuplicates(int[] data)
     {
-        // Add code here.
-        return 0;
+        var set = new HashSet<int>();
+        return data.Count(value => !set.Add(value));
     }
 }
