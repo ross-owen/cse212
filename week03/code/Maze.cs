@@ -16,6 +16,7 @@
 /// </summary>
 public class Maze
 {
+    // 'left', 'right', 'up', and 'down'
     private readonly Dictionary<ValueTuple<int, int>, bool[]> _mazeMap;
     private int _currX = 1;
     private int _currY = 1;
@@ -32,7 +33,7 @@ public class Maze
     /// </summary>
     public void MoveLeft()
     {
-        // FILL IN CODE
+        Move(Direction.Left);
     }
 
     /// <summary>
@@ -41,7 +42,7 @@ public class Maze
     /// </summary>
     public void MoveRight()
     {
-        // FILL IN CODE
+        Move(Direction.Right);
     }
 
     /// <summary>
@@ -50,7 +51,7 @@ public class Maze
     /// </summary>
     public void MoveUp()
     {
-        // FILL IN CODE
+        Move(Direction.Up);
     }
 
     /// <summary>
@@ -59,11 +60,48 @@ public class Maze
     /// </summary>
     public void MoveDown()
     {
-        // FILL IN CODE
+        Move(Direction.Down);
     }
 
     public string GetStatus()
     {
         return $"Current location (x={_currX}, y={_currY})";
     }
+
+    private void Move(Direction direction)
+    {
+        var validMovements = _mazeMap[(_currX, _currY)];
+        if (validMovements[(int)direction])
+        {
+            switch (direction)
+            {
+                case Direction.Left:
+                    _currX--;
+                    break;
+                case Direction.Right:
+                    _currX++;
+                    break;
+                case Direction.Up:
+                    _currY--;
+                    break;
+                case Direction.Down:
+                    _currY++;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, "Bad programmer! bad, bad.");
+            }
+        }
+        else
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
+    }
+}
+
+internal enum Direction
+{
+    Left = 0,
+    Right = 1,
+    Up = 2,
+    Down = 3
 }
