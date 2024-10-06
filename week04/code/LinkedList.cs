@@ -45,8 +45,7 @@ public class LinkedList : IEnumerable<int>
             _tail = newNode;
         }
     }
-
-
+    
     /// <summary>
     /// Remove the first node (i.e. the head) of the linked list.
     /// </summary>
@@ -127,18 +126,17 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public void Remove(int value)
     {
-        if (_head is null)
+        if (this.Count() <= 1)
         {
-            return;
-        }
+            if (_head?.Data == value)
+            {
+                RemoveHead();
+            }
 
-        if (_head.Data == value)
-        {
-            RemoveHead();
             return;
         }
         
-        var node = _head.Next;
+        var node = _head?.Next;
         if (node is null)
         {
             return;
@@ -146,26 +144,31 @@ public class LinkedList : IEnumerable<int>
         
         if (node == _tail)
         {
-            RemoveTail();
+            if (node.Data == value)
+            {
+                RemoveTail();
+            }
+
             return;
         }
         
         while (node != null)
         {
-            if (node?.Data == value)
+            if (node.Data == value)
             {
-                var next = node.Next;
                 var prev = node.Prev;
+                var next = node.Next;
+                
                 prev!.Next = next;
                 if (next != null)
                 {
-                    next!.Prev = prev;
+                    next.Prev = prev;
                 }
 
                 return;
             }
 
-            node = node?.Next;
+            node = node.Next;
         }
     }
 
@@ -218,8 +221,6 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public IEnumerable Reverse()
     {
-        // TODO Problem 5
-        
         var node = _tail;
         while (node != null)
         {
