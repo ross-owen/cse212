@@ -14,8 +14,58 @@ public static class Recursion
     /// </summary>
     public static int SumSquaresRecursive(int n)
     {
-        // TODO Start Problem 1
-        return 0;
+        if (n <= 0)
+        {
+            return 0;
+        }
+
+        var pow = Math.Pow(n, 2);
+        return (int)pow + SumSquaresRecursive(n - 1);
+    }
+
+    /// <summary>
+    /// #############
+    /// # Problem 4 #
+    /// #############
+    /// A binary string is a string consisting of just 1's and 0's.  For example, 1010111 is 
+    /// a binary string.  If we introduce a wildcard symbol * into the string, we can say that 
+    /// this is now a pattern for multiple binary strings.  For example, 101*1 could be used 
+    /// to represent 10101 and 10111.  A pattern can have more than one * wildcard.  For example, 
+    /// 1**1 would result in 4 different binary strings: 1001, 1011, 1101, and 1111.
+    ///	
+    /// Using recursion, insert all possible binary strings for a given pattern into the results list.  You might find 
+    /// some of the string functions like IndexOf and [..X] / [X..] to be useful in solving this problem.
+    /// </summary>
+    public static void WildcardBinary(string pattern, List<string> results)
+    {
+        // if there's not a wildcard, simply add the pattern to the results and exit
+        if (!pattern.Contains('*'))
+        {
+            results.Add(pattern);
+            return;
+        }
+        
+        for (var i = 0; i < pattern.Length; i++)
+        {
+            if (pattern[i] != '*')
+            {
+                continue;
+            }
+
+            // get the left and right side of the wildcard so i can build the two strings
+            // that will become the new "pattern" within the recursion
+            var leftSide = pattern[..i];
+            var rightSide = pattern[(i + 1)..];
+
+            // recurse these new patterns. if no remaining wildcards, they will get added to the results
+            // see above
+            WildcardBinary(leftSide + "0" + rightSide, results);
+            WildcardBinary(leftSide + "1" + rightSide, results);
+                
+            // since I've found a wildcard, and I've recursed replacing that wildcard, just return
+            // any remaining wildcards will get handled within the recursion
+            return;
+        }
     }
 
     /// <summary>
@@ -39,7 +89,18 @@ public static class Recursion
     /// </summary>
     public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
     {
-        // TODO Start Problem 2
+        if (word.Length == size)
+        {
+            results.Add(word);
+        }
+        else
+        {
+            for (var i = 0; i < letters.Length; i++)
+            {
+                var lettersLeft = letters.Remove(i, 1);
+                PermutationsChoose(results, lettersLeft, size, word + letters[i]);
+            }
+        }
     }
 
     /// <summary>
@@ -84,41 +145,34 @@ public static class Recursion
     /// 'remember' has already been added as an input parameter to 
     /// the function for you to complete this task.
     /// </summary>
-    public static decimal CountWaysToClimb(int s, Dictionary<int, decimal>? remember = null)
+    public static decimal CountWaysToClimb(int steps, Dictionary<int, decimal>? remember = null)
     {
         // Base Cases
-        if (s == 0)
+        if (steps == 0)
             return 0;
-        if (s == 1)
+        if (steps == 1)
             return 1;
-        if (s == 2)
+        if (steps == 2)
             return 2;
-        if (s == 3)
+        if (steps == 3)
             return 4;
 
-        // TODO Start Problem 3
+        if (remember == null)
+        {
+            remember = new Dictionary<int, decimal>();
+        }
 
+        if (remember.TryGetValue(steps, out var climb))
+        {
+            return climb;
+        }
         // Solve using recursion
-        decimal ways = CountWaysToClimb(s - 1) + CountWaysToClimb(s - 2) + CountWaysToClimb(s - 3);
+        decimal ways = CountWaysToClimb(steps - 1, remember) 
+                       + CountWaysToClimb(steps - 2, remember) 
+                       + CountWaysToClimb(steps - 3, remember);
+        remember[steps] = ways;
+        
         return ways;
-    }
-
-    /// <summary>
-    /// #############
-    /// # Problem 4 #
-    /// #############
-    /// A binary string is a string consisting of just 1's and 0's.  For example, 1010111 is 
-    /// a binary string.  If we introduce a wildcard symbol * into the string, we can say that 
-    /// this is now a pattern for multiple binary strings.  For example, 101*1 could be used 
-    /// to represent 10101 and 10111.  A pattern can have more than one * wildcard.  For example, 
-    /// 1**1 would result in 4 different binary strings: 1001, 1011, 1101, and 1111.
-    ///	
-    /// Using recursion, insert all possible binary strings for a given pattern into the results list.  You might find 
-    /// some of the string functions like IndexOf and [..X] / [X..] to be useful in solving this problem.
-    /// </summary>
-    public static void WildcardBinary(string pattern, List<string> results)
-    {
-        // TODO Start Problem 4
     }
 
     /// <summary>
@@ -129,15 +183,30 @@ public static class Recursion
     {
         // If this is the first time running the function, then we need
         // to initialize the currPath list.
-        if (currPath == null) {
-            currPath = new List<ValueTuple<int, int>>();
+        currPath ??= [];
+        currPath.Add((x, y));
+        
+        // am i at the end?
+        if (maze.IsEnd(x, y))
+        {
+            results.Add(currPath.AsString());
+            return;
         }
         
-        // currPath.Add((1,2)); // Use this syntax to add to the current path
+        // try moving all directions
+        // the move method will recursively call SolveMaze
+        Move(x, y - 1, maze, currPath, results);
+        Move(x, y + 1, maze, currPath, results);
+        Move(x - 1, y, maze, currPath, results);
+        Move(x + 1, y, maze, currPath, results);
+    }
 
-        // TODO Start Problem 5
-        // ADD CODE HERE
+    private static void Move(int x, int y, Maze maze, List<(int, int)> currPath, List<string> results)
+    {
+        if (!maze.IsValidMove(currPath, x, y))
+            return;
 
-        // results.Add(currPath.AsString()); // Use this to add your path to the results array keeping track of complete maze solutions when you find the solution.
+        SolveMaze(results, maze, x, y, currPath); // will recurse through until either blocked or at the end
+        currPath.Remove((x, y));    // remove it since we've either been blocked or successfully hit the end so we can look for another path
     }
 }
